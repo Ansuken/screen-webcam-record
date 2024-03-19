@@ -1,0 +1,74 @@
+.screen-recording-container {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+    border: 1px solid #666;
+    border-radius: 1rem;
+}
+
+.header {
+    text-align: center;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.start-button,
+.stop-button {
+    padding: 0.5rem 2rem;
+    font-size: 1rem;
+    cursor: pointer;
+    background-color: #4caf50;
+    border: none;
+    border-radius: 0.2rem;
+    color: white;
+}
+
+.stop-button {
+    background-color: #f44336;
+}
+
+.video-container {
+    display: flex;
+    justify-content: space-around;
+    gap: 1rem;
+}
+
+.screen-video,
+.webcam-video {
+    width: 50%;
+}
+
+.video-title {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+video {
+    width: 100%;
+}
+
+.devices {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+}
+
+.device-item {
+    width: 100%;
+    text-align: center;
+}
+
+.device-item select {
+    width: 100%;
+}
