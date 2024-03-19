@@ -24,13 +24,32 @@ const ScreenRecordingComponent = () => {
 
     const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
 
+    const [videoInput, setVideoInput] = useState<string>('');
+    const [audioInput, setAudioInput] = useState<string>('');
+
     useEffect(()=>{
-        navigator.mediaDevices.enumerateDevices().then(devices=>{  // USe memo
-            console.log(devices)
-            setDevices(devices)
-        })
+        const fetchCameras = async () => {
+            try {
+              const devices = await navigator.mediaDevices.enumerateDevices();
+              setDevices(devices)
+              devices.map(dev => {
+                if (dev.kind === 'audioinput' && dev.deviceId==='default') {
+                    console.log(dev)
+                    setAudioInput(dev.deviceId)
+                }
+                if (dev.kind === 'videoinput') {
+                    console.log(dev)
+                    setVideoInput(dev.deviceId)
+                }
+            });
+            } catch (error) {
+              console.error('Error enumerating devices:', error);
+            }
+          };
+          fetchCameras();
     },[])
 
+    console.log(devices)
 
     //Función para iniciar la grabación de pantalla
     const startScreenRecording = async () => {
@@ -86,19 +105,35 @@ const ScreenRecordingComponent = () => {
     //Función para iniciar la grabación de webcam
     const startWebcamRecording = async () => {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: true,
-                audio: true
-            }); //Obtener el stream de la webcam
+            const constraints: MediaStreamConstraints = {
+                video: {
+                    deviceId: { exact: videoInput }
+                },
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    sampleRate: 44100,
+                    deviceId: { exact: audioInput }
+                }
+            };
+            const stream = await navigator.mediaDevices.getUserMedia(constraints); //Obtener el stream de la webcam
             setWebcamStream(stream);
 
+            // Asignar el stream al elemento de video de la webcam
+            if (webcamVideoRef.current) {
+                webcamVideoRef.current.srcObject = stream;
+            }
             //Crear un MediaRecorder para grabar el stream
             const mediaRecorder = new MediaRecorder(stream);
             //Almacenar el MediaRecorder en la referencia
             webcamMediaRecorderRef.current = mediaRecorder;
 
+            mediaRecorder.onstart = () => {
+                console.log('MediaRecorder started', mediaRecorder);
+            }
             //Evento ondataavailable para manejar los datos grabados
             mediaRecorder.ondataavailable = (e) => {
+                console.log(e.data)
                 if (e.data.size > 0) {
                     webcamRecordedChunksRef.current.push(e.data);
                 }
@@ -138,33 +173,22 @@ const ScreenRecordingComponent = () => {
             <div className="devices">
                 <div className="device-item">
                     <h3>Audio Input</h3>
-                    <select>{devices.map(dev => {
+                    <select value={audioInput} onChange={(e)=>setAudioInput(e.target.value)}>{devices.map(dev => {
                         if (dev.kind === 'audioinput')
                             return <option
                                 value={dev.deviceId}
-                                key={new Date().getTime()}>
-                                {dev.label}
-                            </option>
-                    })}</select>
-                </div>
-                <div className="device-item">
-                    <h3>Audio Output</h3>
-                    <select>{devices.map(dev => {
-                        if (dev.kind === 'audiooutput')
-                            return <option
-                                value={dev.deviceId}
-                                key={new Date().getTime()}>
+                                key={dev.deviceId}>
                                 {dev.label}
                             </option>
                     })}</select>
                 </div>
                 <div className="device-item">
                     <h3>Video Input</h3>
-                    <select>{devices.map(dev => {
+                    <select value={videoInput} onChange={(e)=>setVideoInput(e.target.value)}>{devices.map(dev => {
                         if (dev.kind === 'videoinput')
                             return <option
                                 value={dev.deviceId}
-                                key={new Date().getTime()}>
+                                key={dev.deviceId}>
                                 {dev.label}
                             </option>
                     })}</select>
@@ -188,14 +212,13 @@ const ScreenRecordingComponent = () => {
                 {screenStream && (
                     <div className="screen-video">
                         <h2 className="video-title">Screen Recording</h2>
-                        <video autoPlay controls ref={screenVideoRef}/>
+                        <video autoPlay controls ref={screenVideoRef} playsInline/>
                     </div>
                 )}
                 {webcamStream && (
                     <div className="webcam-video">
                         <h2 className="video-title">Webcam Recording</h2>
-                        <video autoPlay controls ref={webcamVideoRef}
-                               onLoadedMetadata={() => webcamVideoRef.current?.play()}/>
+                        <video autoPlay controls ref={webcamVideoRef} playsInline/>
                     </div>
                 )}
             </div>
