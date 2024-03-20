@@ -88,7 +88,9 @@ const ScreenRecordingComponent = () => {
                 stream.getTracks().forEach(track => track.stop());
             };
 
-            mediaRecorder.start(60000); //Comenzar la grabación
+            mediaRecorder.start(60000);
+            /*Comenzar la grabación indicando el tamaño en ms de los chunks,
+            así cada 60s entrará en el evento ondataavailable*/
             setScreenRecording(true); //Actualizar el estado de grabación de pantalla
         } catch (error) {
             console.error('Error starting screen recording:', error);
@@ -151,7 +153,9 @@ const ScreenRecordingComponent = () => {
                 stream.getTracks().forEach(track => track.stop());
             };
 
-            mediaRecorder.start(60000); //Comenzar la grabación
+            mediaRecorder.start(60000);
+            /*Comenzar la grabación indicando el tamaño en ms de los chunks,
+            así cada 60s entrará en el evento ondataavailable*/
             setWebcamRecording(true);
         } catch (error) {
             console.error('Error starting webcam recording:', error);

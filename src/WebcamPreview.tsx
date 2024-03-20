@@ -56,18 +56,18 @@ const WebcamPreview: React.FC = () => {
   };
 
   return (
-    <div className="camera-container"> {/* Añadimos una clase al contenedor principal */}
+    <div className="camera-container">
       <h2>Seleccione una cámara:</h2>
-      <select value={selectedCamera || ''} onChange={handleCameraChange} className="camera-select"> {/* Añadimos una clase al select */}
+      <select value={selectedCamera || ''} onChange={handleCameraChange} className="camera-select">
         {cameras.map(camera => (
           <option key={camera.deviceId} value={camera.deviceId}>{camera.label}</option>
         ))}
       </select>
       <br />
-      <button onClick={handleStartStream} className="camera-button">Iniciar</button> {/* Añadimos una clase al botón */}
-      <button onClick={handleStopStream} className="camera-button">Detener</button> {/* Añadimos una clase al botón */}
+      <button onClick={handleStartStream} className="camera-button">Iniciar</button>
+      <button onClick={handleStopStream} className="camera-button">Detener</button>
       <br />
-      <video ref={videoRef} autoPlay className="camera-video" /> {/* Añadimos una clase al elemento de video */}
+      <video ref={videoRef} autoPlay className="camera-video" />
     </div>
   );
 };
