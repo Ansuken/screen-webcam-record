@@ -8,19 +8,19 @@ const WebcamPreview: React.FC = () => {
   const streamRef = useRef<MediaStream | null>(null);
 
   useEffect(() => {
-    const fetchCameras = async () => {
-      try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const videoDevices = devices.filter(device => device.kind === 'videoinput');
-        setCameras(videoDevices);
-        if (videoDevices.length > 0) {
-          setSelectedCamera(videoDevices[0].deviceId);
-        }
-      } catch (error) {
-        console.error('Error enumerating devices:', error);
-      }
-    };
-    fetchCameras();
+      // Solicitar permisos al montar el componente
+      navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+          .then(async() => {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const videoDevices = devices.filter(device => device.kind === 'videoinput');
+            setCameras(videoDevices);
+            if (videoDevices.length > 0) {
+              setSelectedCamera(videoDevices[0].deviceId);
+            }
+          })
+          .catch((err) => {
+            console.error('Error al obtener permisos:', err);
+          });
   }, []);
 
   const handleCameraChange = (event: React.ChangeEvent<HTMLSelectElement>) => {

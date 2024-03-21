@@ -28,25 +28,25 @@ const ScreenRecordingComponent = () => {
     const [audioInput, setAudioInput] = useState<string>('');
 
     useEffect(()=>{
-        const fetchCameras = async () => {
-            try {
-              const devices = await navigator.mediaDevices.enumerateDevices();
-              setDevices(devices)
-              devices.map(dev => {
-                if (dev.kind === 'audioinput' && dev.deviceId==='default') {
-                    console.log(dev)
-                    setAudioInput(dev.deviceId)
-                }
-                if (dev.kind === 'videoinput') {
-                    console.log(dev)
-                    setVideoInput(dev.deviceId)
-                }
+        // Solicitar permisos al montar el componente
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+            .then(async() => {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                setDevices(devices)
+                devices.map(dev => {
+                    if (dev.kind === 'audioinput' && dev.deviceId === 'default') {
+                        console.log(dev)
+                        setAudioInput(dev.deviceId)
+                    }
+                    if (dev.kind === 'videoinput') {
+                        console.log(dev)
+                        setVideoInput(dev.deviceId)
+                    }
+                })
+            })
+            .catch((err) => {
+                console.error('Error al obtener permisos:', err);
             });
-            } catch (error) {
-              console.error('Error enumerating devices:', error);
-            }
-          };
-          fetchCameras();
     },[])
 
     console.log(devices)
