@@ -36,6 +36,14 @@ const WebcamPreview: React.FC = () => {
         }
       };
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+      // Obtenemos la info de la cámara
+      const [videoTrack] = stream.getVideoTracks();
+      console.log('Capabilities', videoTrack.getCapabilities())
+      console.log('Settings', videoTrack.getSettings())
+      console.log('Constraints', videoTrack.getConstraints())
+
+
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;

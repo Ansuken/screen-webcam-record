@@ -35,11 +35,9 @@ const ScreenRecordingComponent = () => {
                 setDevices(devices)
                 devices.map(dev => {
                     if (dev.kind === 'audioinput' && dev.deviceId === 'default') {
-                        console.log(dev)
                         setAudioInput(dev.deviceId)
                     }
                     if (dev.kind === 'videoinput') {
-                        console.log(dev)
                         setVideoInput(dev.deviceId)
                     }
                 })
@@ -48,8 +46,6 @@ const ScreenRecordingComponent = () => {
                 console.error('Error al obtener permisos:', err);
             });
     },[])
-
-    console.log(devices)
 
     //Función para iniciar la grabación de pantalla
     const startScreenRecording = async () => {
@@ -83,7 +79,7 @@ const ScreenRecordingComponent = () => {
                             // Y este es el resultado final, un stream con video y audio
                             const audioTrack = audioStream.getAudioTracks();
                             // Retornamos el stream con video y audio
-                            return new MediaStream([videoTrack, audioTrack].flat());
+                            return new MediaStream([videoTrack, audioTrack].flat()); // Se añade flat para aplanar el array
                         }
                     );
                     return audioStream;
