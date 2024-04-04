@@ -56,12 +56,39 @@ const ScreenRecordingComponent = () => {
         try {
             const stream = await navigator.mediaDevices.getDisplayMedia({
                 video: true,
+                 // Si el usuario quiere capturar pantalla con su audio, debemos quitar audio de aquí
+                // Porque se generan problemas de audio y se oye fatal
+                // Solo si queremos dejar que capture por si solo el audio de sistema según estipule
+                // el navegador, ya que Chrome, por ejemplo, solo captura audio si es pestaña,
+                // pero no si es la propia pantalla o ventana
                 audio: {
                     echoCancellation: true,
                     noiseSuppression: true,
                     sampleRate: 44100
                 },
-            }); //Obtener el stream de la pantalla
+            }).then( // En este punto ya tenemos el stream de la pantalla
+                displayMediaStream => {
+                    // Ahora lo que hacemos es obtener el stream de audio
+                    const videoTrack = displayMediaStream.getVideoTracks();
+                    const audioStream = navigator.mediaDevices.getUserMedia({
+                        video: false,
+                        audio: {
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            sampleRate: 44100,
+                            deviceId: { exact: audioInput } // Aquí se selecciona el dispositivo de audio
+                        }
+                    }).then(
+                        audioStream => {
+                            // Y este es el resultado final, un stream con video y audio
+                            const audioTrack = audioStream.getAudioTracks();
+                            // Retornamos el stream con video y audio
+                            return new MediaStream([videoTrack, audioTrack].flat());
+                        }
+                    );
+                    return audioStream;
+                }
+            ); //Obtener el stream de la pantalla
             setScreenStream(stream);
 
             //Crear un MediaRecorder para grabar el stream
